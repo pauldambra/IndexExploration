@@ -22,15 +22,14 @@ namespace IndexExploration
         {
             public RecipientsByDate()
             {
-                Map = people =>
-                      people.SelectMany(person => person.Bodies,
-                                        (person, body) =>
-                                        new PersonMailing
-                                        {
-                                            MembershipNumber = person.MembershipNumber,
-                                            MailingBody = body.BodyText,
-                                            MailingDate = body.MailingDate
-                                        });
+                Map = people => from person in people
+                                from body in person.Bodies
+                                select new PersonMailing
+                                           {
+                                               MembershipNumber = person.MembershipNumber,
+                                               MailingBody = body.BodyText,
+                                               MailingDate = body.MailingDate
+                                           };
 
                 Indexes.Add(pm => pm.MailingDate.Date, FieldIndexing.Default);
             }
@@ -40,14 +39,13 @@ namespace IndexExploration
         {
             public RecipientsCountByDate()
             {
-                Map = people =>
-                      people.SelectMany(person => person.Bodies,
-                                        (person, body) =>
-                                        new DateCount
-                                            {
-                                                RecipientCount = 1, 
-                                                MailingDate = body.MailingDate
-                                            });
+                Map = people => from person in people
+                                from body in person.Bodies
+                                select new DateCount
+                                           {
+                                               RecipientCount = 1,
+                                               MailingDate = body.MailingDate
+                                           };
 
                 Reduce = results => results.GroupBy(result => result.MailingDate)
                                            .Select(g => new DateCount
