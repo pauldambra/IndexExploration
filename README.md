@@ -69,21 +69,29 @@ if I try to grab the PersonMailing objects I'm told Raven can't cast.
 							.As<PersonMailing>().ToList();
 ```
 
-I am sure this is my problem and not Raven's.
+This was indeed my problem and not Raven's. Building the index using SelectMany was the issue that was throwing the InvalidCastException.
 
-This example project expects Raven version 1.0.888. 
+rewriting the Index creation using the linq query form as [suggested on twitter](https://twitter.com/#!/pauldambra/status/204644424116998144) was the key here:
+``` c#
+        public class RecipientsByDate : AbstractIndexCreationTask<Person, PersonMailing>
+        {
+            public RecipientsByDate()
+            {
+                Map = people => from person in people
+                                from body in person.Bodies
+                                select new {
+                                               person.MembershipNumber,
+                                               MailingBody = body.BodyText,
+                                               body.MailingDate
+                                           };
 
-I've excluded the packages folder to save on uploading stuff that is already on the internet. However, the packages expected are:
-
+                Indexes.Add(pm => pm.MailingDate, FieldIndexing.Default);
+            }
+        }
 ```
-<?xml version="1.0" encoding="utf-8"?>
-<packages>
-  <package id="Newtonsoft.Json" version="4.0.8" />
-  <package id="NLog" version="2.0.0.2000" />
-  <package id="NUnit" version="2.6.0.12054" />
-  <package id="RavenDB" version="1.0.888" />
-  <package id="RavenDB.Client" version="1.0.888" />
-  <package id="RavenDB.Database" version="1.0.888" />
-  <package id="RavenDB.Embedded" version="1.0.888" />
-</packages>
-```
+Above is also an example of fixing the indexing issue.
+
+For this there were two steps removing the class declaration so ```select new PersonMailing {}``` became ```select new``` which alters how the results are stored in Raven.
+This also meant that the index had to be on the DateTime object and not on the results of a date call for that object.
+
+Both of which I managed to get to after seeing [this answer on SO](http://stackoverflow.com/a/7566061/222163)
