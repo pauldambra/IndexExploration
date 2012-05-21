@@ -71,4 +71,19 @@ if I try to grab the PersonMailing objects I'm told Raven can't cast.
 
 I am sure this is my problem and not Raven's.
 
-This example project expects Raven version 1.0.888
+This example project expects Raven version 1.0.888. 
+
+I've excluded the packages folder to save on uploading stuff that is already on the internet. However, the packages expected are:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <package id="Newtonsoft.Json" version="4.0.8" />
+  <package id="NLog" version="2.0.0.2000" />
+  <package id="NUnit" version="2.6.0.12054" />
+  <package id="RavenDB" version="1.0.888" />
+  <package id="RavenDB.Client" version="1.0.888" />
+  <package id="RavenDB.Database" version="1.0.888" />
+  <package id="RavenDB.Embedded" version="1.0.888" />
+</packages>
+```
