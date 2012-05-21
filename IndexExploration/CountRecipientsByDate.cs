@@ -41,6 +41,45 @@ namespace IndexExploration
                 session.ClearStaleIndexes();
 
                 var results = session.Query<DateCount, Indexes.RecipientsCountByDate>()
+                                     .Where(dc => dc.MailingDate.Date == TargetDate.Date)
+                                     .ToList();
+                Assert.AreEqual(1, results.Count);
+                var actual = results.First();
+                Assert.IsNotNull(actual);
+                Assert.AreEqual(2, actual.RecipientCount);
+            }
+
+        }
+
+        [Test]
+        public void ShouldGetZeroWhenNoMailingIsPresentInMemoryMethod()
+        {
+            using (var session = _store.OpenSession())
+            {
+                session.Store(_first);
+                session.Store(_second);
+                session.SaveChanges();
+                session.ClearStaleIndexes();
+
+                var unrealisticDate = new DateTime(3014, 4, 1);
+                var actual = session.Query<DateCount, Indexes.RecipientsCountByDate>()
+                                    .ToList()
+                                    .Where(dc => dc.MailingDate.Date == unrealisticDate);
+                Assert.True(!actual.Any());
+            }
+        }
+
+        [Test]
+        public void ShouldGetTwoWithExpectedValueInMemoryMethod()
+        {
+            using (var session = _store.OpenSession())
+            {
+                session.Store(_first);
+                session.Store(_second);
+                session.SaveChanges();
+                session.ClearStaleIndexes();
+
+                var results = session.Query<DateCount, Indexes.RecipientsCountByDate>()
                                             .ToList();
                 Assert.AreEqual(1, results.Count);
                 DateCount actual = null;

@@ -20,7 +20,7 @@ namespace IndexExploration
 
                 var unrealisticDate = new DateTime(3014, 4, 1);
                 var actual = session.Query<PersonMailing, Indexes.RecipientsByDate>()
-                                        .AsProjection<PersonMailing>().ToList();
+                                        .As<PersonMailing>().ToList();
                 Assert.True(!actual.Any());
             }
         }
