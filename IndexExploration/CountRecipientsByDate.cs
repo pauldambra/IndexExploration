@@ -16,16 +16,16 @@ namespace IndexExploration
         [Test]
         public void ShouldGetZeroWhenNoMailingIsPresent()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
                 var unrealisticDate = new DateTime(3014, 4, 1);
-                var actual = session.Query<DateCount, Indexes.RecipientsCountByDate>()
-                                     .Where(dc => dc.MailingDate.Date == unrealisticDate);
+                var actual = session.Query<DateCount, IndexesHolder.RecipientsCountByDate>()
+                                     .Where(dc => dc.MailingDate == unrealisticDate);
                 Assert.True(!actual.Any());   
             }
         }
@@ -33,15 +33,15 @@ namespace IndexExploration
         [Test]
         public void ShouldGetTwoWithExpectedValue()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
-                var results = session.Query<DateCount, Indexes.RecipientsCountByDate>()
-                                     .Where(dc => dc.MailingDate.Date == TargetDate.Date)
+                var results = session.Query<DateCount, IndexesHolder.RecipientsCountByDate>()
+                                     .Where(dc => dc.MailingDate == TargetDate)
                                      .ToList();
                 Assert.AreEqual(1, results.Count);
                 var actual = results.First();
@@ -54,17 +54,17 @@ namespace IndexExploration
         [Test]
         public void ShouldGetZeroWhenNoMailingIsPresentInMemoryMethod()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
                 var unrealisticDate = new DateTime(3014, 4, 1);
-                var actual = session.Query<DateCount, Indexes.RecipientsCountByDate>()
+                var actual = session.Query<DateCount, IndexesHolder.RecipientsCountByDate>()
                                     .ToList()
-                                    .Where(dc => dc.MailingDate.Date == unrealisticDate);
+                                    .Where(dc => dc.MailingDate == unrealisticDate);
                 Assert.True(!actual.Any());
             }
         }
@@ -72,20 +72,20 @@ namespace IndexExploration
         [Test]
         public void ShouldGetTwoWithExpectedValueInMemoryMethod()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
-                var results = session.Query<DateCount, Indexes.RecipientsCountByDate>()
+                var results = session.Query<DateCount, IndexesHolder.RecipientsCountByDate>()
                                             .ToList();
                 Assert.AreEqual(1, results.Count);
                 DateCount actual = null;
                 try
                 {
-                    actual = results.Single(dc => dc.MailingDate.Date == TargetDate);
+                    actual = results.Single(dc => dc.MailingDate == TargetDate);
                 }
                 catch (Exception ex)
                 {

@@ -12,7 +12,7 @@ namespace IndexExploration
         private const string FirstMemNo = "A12345";
         protected static readonly DateTime TargetDate = new DateTime(2011, 4, 1);
 
-        protected readonly Person _first = new Person
+        protected readonly Person First = new Person
                                              {
                                                  Bodies = new List<Body>
                                                               {
@@ -25,7 +25,7 @@ namespace IndexExploration
                                                  MembershipNumber = FirstMemNo
                                              };
 
-        protected readonly Person _second = new Person
+        protected readonly Person Second = new Person
                                               {
                                                   Bodies = new List<Body>
                                                                {
@@ -38,12 +38,12 @@ namespace IndexExploration
                                                   MembershipNumber = SecondMemNo
                                               };
 
-        protected EmbeddableDocumentStore _store;
+        protected EmbeddableDocumentStore Store;
 
         [SetUp]
         public void Setup()
         {
-            _store = new EmbeddableDocumentStore
+            Store = new EmbeddableDocumentStore
                          {
                              Configuration =
                                  {
@@ -58,17 +58,17 @@ namespace IndexExploration
                                  }
                          };
 
-            _store.Initialize();
+            Store.Initialize();
 
-            IndexCreation.CreateIndexes(typeof (Indexes.RavenPeopleByMembershipNo).Assembly, _store);
-            IndexCreation.CreateIndexes(typeof (Indexes.RecipientsCountByDate).Assembly, _store);
-            IndexCreation.CreateIndexes(typeof (Indexes.RecipientsByDate).Assembly, _store);
+            IndexCreation.CreateIndexes(typeof (IndexesHolder.RavenPeopleByMembershipNo).Assembly, Store);
+            IndexCreation.CreateIndexes(typeof (IndexesHolder.RecipientsCountByDate).Assembly, Store);
+            IndexCreation.CreateIndexes(typeof (IndexesHolder.RecipientsByDate).Assembly, Store);
         }
 
         [TearDown]
         public void Teardown()
         {
-            
+            Store.Dispose();
         }
     }
 }

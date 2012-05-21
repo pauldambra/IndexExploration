@@ -14,16 +14,17 @@ namespace IndexExploration
         [Test]
         public void ShouldGetEmptyListWhenNoMailingIsPresent()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
                 var unrealisticDate = new DateTime(3014, 4, 1);
-                var actual = session.Query<PersonMailing, Indexes.RecipientsByDate>()
-                                        .As<PersonMailing>().ToList();
+                var actual =
+                    session.Query<PersonMailing, IndexesHolder.RecipientsByDate>()
+                           .Where(pm => pm.MailingDate == unrealisticDate);
                 Assert.True(!actual.Any());
             }
         }
@@ -31,18 +32,19 @@ namespace IndexExploration
         [Test]
         public void ShouldGetEmptyListWhenNoMailingIsPresentInMemoryMethod()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
                 var unrealisticDate = new DateTime(3014, 4, 1);
 
-                var candidates = from person in session.Query<Person>().ToList()
+                var people = session.Query<Person>().ToList();
+                var candidates = from person in people
                                   from body in person.Bodies
-                                  where body.MailingDate.Date == unrealisticDate.Date
+                                  where body.MailingDate == unrealisticDate
                                   select
                                       new PersonMailing
                                           {
@@ -51,6 +53,8 @@ namespace IndexExploration
                                               MembershipNumber = person.MembershipNumber
                                           };
 
+                
+
                 Assert.True(!candidates.Any());
             }
         }
@@ -58,18 +62,17 @@ namespace IndexExploration
         [Test]
         public void ShouldGetTwoInListWithExpectedValueInMemoryMethod()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
-                var unrealisticDate = new DateTime(3014, 4, 1);
-
-                var candidates = from person in session.Query<Person>().ToList()
+                var people = session.Query<Person>().ToList();
+                var candidates = from person in people
                                  from body in person.Bodies
-                                 where body.MailingDate.Date == TargetDate.Date
+                                 where body.MailingDate == TargetDate
                                  select
                                      new PersonMailing
                                      {
@@ -85,15 +88,15 @@ namespace IndexExploration
         [Test]
         public void ShouldGetTwoInListWithExpectedValue()
         {
-            using (var session = _store.OpenSession())
+            using (var session = Store.OpenSession())
             {
-                session.Store(_first);
-                session.Store(_second);
+                session.Store(First);
+                session.Store(Second);
                 session.SaveChanges();
                 session.ClearStaleIndexes();
 
-                var actual = session.Query<PersonMailing, Indexes.RecipientsByDate>()
-                                    .Where(p => p.MailingDate.Date == TargetDate.Date);
+                var actual = session.Query<PersonMailing, IndexesHolder.RecipientsByDate>()
+                                    .Where(p => p.MailingDate == TargetDate);
                 Assert.IsNotNull(actual);
                 Assert.AreEqual(2, actual.Count());
             }
