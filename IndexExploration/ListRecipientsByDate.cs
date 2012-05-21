@@ -8,6 +8,9 @@ namespace IndexExploration
     [TestFixture]
     public class ListRecipientsByDate : RavenTestBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [Test]
         public void ShouldGetEmptyListWhenNoMailingIsPresent()
         {

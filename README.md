@@ -55,7 +55,19 @@ with this model
     }
 ```
 
-If I try to query by date I'm told it isn't indexed... if I try to grab the PersonMailing objects I'm told Raven can't cast.
+If I try to query by date I'm told it isn't indexed... 
+
+``` c#
+                var actual = session.Query<PersonMailing, Indexes.RecipientsByDate>()
+                                    .Where(p => p.MailingDate.Date == TargetDate.Date);
+```
+
+if I try to grab the PersonMailing objects I'm told Raven can't cast.
+
+``` c#
+                var actual = session.Query<PersonMailing, Indexes.RecipientsByDate>()
+                                        .As<PersonMailing>().ToList();
+```
 
 I am sure this is my problem and not Raven's.
 
