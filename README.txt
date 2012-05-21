@@ -1,6 +1,6 @@
 So I have a person model (which in the real application is more complex) which is being logged and I want to consume it for reporting.
 
-```c#
+``` c#
     public class Person
     {
         public string MembershipNumber { get; set; }
@@ -10,7 +10,7 @@ So I have a person model (which in the real application is more complex) which i
 
 Each Body in the list has it's own date
 
-```c#
+``` c#
     public class Body
     {
         public DateTime MailingDate { get; set; }
@@ -25,7 +25,7 @@ So I did some googling and stackoverflowing (not a yet an actual verb) and built
 I can count things but I'll be jiggered if I can index and find people by date...
 
 I'm trying this
-```c#
+``` c#
         public class RecipientsByDate : AbstractIndexCreationTask<Person, PersonMailing>
         {
             public RecipientsByDate()
@@ -46,7 +46,7 @@ I'm trying this
 ```
 
 with this model
-```c#
+``` c#
     public class PersonMailing
     {
         public string MembershipNumber { get; set; }
